@@ -8,24 +8,21 @@
                 <div class="card-header">{{ __('Solicitação de Permissão para aula') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
 
-                    <button type="button" class="btn btn-primary"> <a href="{{ route('class') }}" style="color: #fff;"> Voltar </a></button>
-                    
+                    <button type="button" class="btn btn-primary"> <a href="{{ route('adminClass') }}" style="color: #fff;"> Voltar </a></button>
+
                     <table class="table table-striped">
                         <thead>
                             <tr>
+                                <th scope="col">Matéria</th>
                                 <th scope="col">Aluno</th>
                                 <th scope="col">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($students as $class) 
+                            @foreach($students as $class)
                             <tr>
+                            <td>{{$class['matter']}}</td>
                             <td>{{$class['name']}}</td>
                                 <td>
                                     @if ($class['present'])
@@ -48,7 +45,6 @@
                             @endforeach
                         </tbody>
                     </table>
-                    
                 </div>
             </div>
         </div>

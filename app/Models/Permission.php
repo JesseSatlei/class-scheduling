@@ -8,5 +8,5 @@ class Permission extends Model
 {
     protected $table = 'permission';
     protected $primaryKey = 'id';
-    protected $fillable = ['type_permission', 'type_user'];
+    protected $fillable = ['type_permission', 'type_user', 'route'];
 }

@@ -7,28 +7,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Lesson;
+use App\Models\Permission;
 
 class AdminController extends Controller
 {
 
     private $objLesson;
     private $objUser;
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    private $objPermission;
+
     public function __construct()
     {
         $this->objLesson = new Lesson;
         $this->objUser = new User;
+        $this->objPermission = new Permission;
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
         $permission = false;
@@ -42,8 +36,92 @@ class AdminController extends Controller
 
     public function adminPermission()
     {
-        return view('adminPermission');
-    } 
+        $permission = $this->validatePermission(Auth::user()->type, 'adminPermission', 'Visualization');
+        $permissions = $this->objPermission->get();
+
+        if ($permission) {
+            return view('adminPermission', compact('permissions'));
+        } else {
+            $message = 'Você não possui permissão para acessar as permissões';
+            return view('home', compact('message'));
+        }
+    }
+
+    public function registerPermission()
+    {
+        $permission = $this->validatePermission(Auth::user()->type, 'adminPermission', 'Modify');
+        if ($permission) {
+            return view('adminRegisterPermission');
+        } else {
+            $message = 'Você não possui permissão para criar uma permissão';
+            return view('home', compact('message'));
+        }
+    }
+
+    public function updatePermission($id)
+    {
+        $permission = $this->objPermission->where('id', '=', $id)->first();
+        $per = $this->validatePermission(Auth::user()->type, 'updatePermission', 'Modify');
+
+        if ($per) {
+            return view('adminUpdateRegister', compact('permission'));
+        } else {
+            $message = 'Ops, algo de errado ocorreu';
+            return view('home', compact('message'));
+        }
+    }
+
+    public function createPermission(Request $request)
+    {
+        $name = isset($request->name) ? $request->name : '';
+        $type_user = isset($request->type_user) ? $request->type_user : '';
+        $type_permission = isset($request->type_permission) ? $request->type_permission : '';
+
+        $permission = $this->objPermission->create([
+            'type_user' => $type_user,
+            'route' => $name,
+            'type_permission' => $type_permission
+        ]);
+
+        if ($permission) {
+            return redirect('adminPermission');
+        } else {
+            $message = 'Ops, algo de errado ocorreu';
+            return view('home', compact('message'));
+        }
+    }
+
+    public function permissionUpdate(Request $request)
+    {
+        $name = isset($request->name) ? $request->name : '';
+        $type_user = isset($request->type_user) ? $request->type_user : '';
+        $type_permission = isset($request->type_permission) ? $request->type_permission : '';
+
+        $permission = $this->objPermission->where(['id'=>$request->permission_id])->update([
+            'type_user' => $type_user,
+            'route' => $name,
+            'type_permission' => $type_permission
+        ]);
+        if ($permission) {
+            return redirect('adminPermission');
+        } else {
+            $message = 'Ops, algo de errado ocorreu';
+            return view('home', compact('message'));
+        }
+    }
+
+    public function destroyPermission($id)
+    {
+        $permission = $this->validatePermission(Auth::user()->type, 'destroyPermission', 'Modify');
+        if ($permission) {
+            $id = $this->objPermission->find((int) $id);
+            $removed = $id->delete();
+            return redirect('adminPermission');
+        } else {
+            $message = 'Você não possui permissão para excluir a permissão';
+            return view('home', compact('message'));
+        }
+    }
 
     public function adminClass()
     {
@@ -55,9 +133,15 @@ class AdminController extends Controller
     {
         $profs = $this->objUser->where('type', '=', 'P')->get();
         $students = $this->objUser->where('type', '=', 'A')->get();
-        return view('adminLessonRegister', compact('profs', 'students'));
+        $permission = $this->validatePermission(Auth::user()->type, 'registerLesson', 'Visualization');
+        if ($permission) {
+            return view('adminLessonRegister', compact('profs', 'students'));
+        } else {
+            $message = 'Você não possui permissão para criar uma aula';
+            return view('home', compact('message'));
+        }
     }
-    
+
     public function createLesson(Request $request)
     {
         $class = null;
@@ -104,7 +188,14 @@ class AdminController extends Controller
         $teacher_lesson = $lessons->teacher_id;
         $students = $this->objUser->where('type', '=', 'A')->get();
 
-        return view('adminLessonUpdate', compact('lessons', 'profs', 'teacher_lesson', 'students'));
+        $permission = $this->validatePermission(Auth::user()->type, 'lessorFormUpdate', 'Visualizaton');
+        if ($permission) {
+            return view('adminLessonUpdate', compact('lessons', 'profs', 'teacher_lesson', 'students'));
+        } else {
+            $message = 'Você não possui permissão para acessar a página de atualização das lições';
+            return view('home', compact('message'));
+        }
+
     }
 
     public function lessonUpdate(Request $request)
@@ -159,51 +250,89 @@ class AdminController extends Controller
                 $students_id[] = $value->student_id;
             }
             $students = $this->objUser->whereIn('id', $students_id)->get();
-
         }
-
-        return view('adminLessonInfo', compact('lessons', 'teacher', 'students'));
+        if (empty($students)) {
+            $students = null;
+        }
+        $type = Auth::user()->type;
+        $permission = $this->validatePermission(Auth::user()->type, 'lessonInfo', 'Modify');
+        if ($permission) {
+            return view('adminLessonInfo', compact('lessons', 'teacher', 'students', 'type', 'id'));
+        } else {
+            $message = 'Você não possui permissão para ver as informações da aula';
+            return view('home', compact('message'));
+        }
     }
 
     public function destroyLesson($id)
     {
-        $id = $this->objLesson->find((int) $id);
-        $removed = $id->delete();
+        $permission = $this->validatePermission(Auth::user()->type, 'destroyLesson', 'Modify');
+        if ($permission) {
+            $id = $this->objLesson->find((int) $id);
+            $removed = $id->delete();
+            return redirect('adminClass');
+        } else {
+            $message = 'Você não possui permissão para deletar as lições';
+            return view('home', compact('message'));
+        }
 
-        return redirect('adminClass');
     }
 
     public function adminStudent()
     {
         $studants = $this->objUser->where('type', '=', 'A')->get();
-        return view('adminStudent', compact('studants'));
+        $permission = $this->validatePermission(Auth::user()->type, 'adminStudent', 'Visualizaton');
+        if ($permission) {
+            return view('adminStudent', compact('studants'));
+        } else {
+            $message = 'Você não possui permissão para acessar a página de estudantes';
+            return view('home', compact('message'));
+        }
     }
 
     public function adminProf()
     {
         $profs = $this->objUser->where('type', '=', 'P')->get();
-        return view('adminProf', compact('profs'));
+        $permission = $this->validatePermission(Auth::user()->type, 'adminProf', 'Modify');
+        if ($permission) {
+            return view('adminProf', compact('profs'));
+        } else {
+            $message = 'Você não possui permissão para acessar a página de professores';
+            return view('home', compact('message'));
+        }
     }
 
     public function createUser()
     {
-        return view('adminUserRegister');
+        $permission = $this->validatePermission(Auth::user()->type, 'adminRegister', 'Modify');
+        if ($permission) {
+            return view('adminUserRegister');
+        } else {
+            $message = 'Você não possui permissão para criar um usuário';
+            return view('home', compact('message'));
+        }
     }
 
     public function createdUser(Request $request)
     {
-        $new_user = User::create([
-            'type' => $request->type,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'name' => $request->name
-        ]);
 
-        if ($new_user) {
-            return redirect('home');
+        $permission = $this->validatePermission(Auth::user()->type, 'adminProfRegister', 'Modify');
+        if ($permission) {
+            $new_user = User::create([
+                'type' => $request->type,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'name' => $request->name
+            ]);
+            if ($new_user) {
+                return redirect('home');
+            } else {
+                $message = 'Ops, algo de errado ocorreu';
+                return view('adminUserRegister', compact('message'));
+            }
         } else {
-            $message = 'Ops, algo de errado ocorreu';
-            return view('adminUserRegister', compact('message'));
+            $message = 'Você não possui permissão para criar um usuário';
+            return view('home', compact('message'));
         }
     }
 
@@ -236,7 +365,13 @@ class AdminController extends Controller
     {
         $user = $this->objUser->where('id', '=', (int)$id)->get();
         $user = $user[0];
-        return view('adminUserInfo', compact('user'));
+        $permission = $this->validatePermission(Auth::user()->type, 'adminProfDelete', 'Modify');
+        if ($permission) {
+            return view('adminUserInfo', compact('user'));
+        } else {
+            $message = 'Você não possui permissão para visualizar as informações dos usuários';
+            return view('home', compact('message'));
+        }
     }
 
     public function userDelete($id)
@@ -244,6 +379,34 @@ class AdminController extends Controller
         $id = $this->objUser->find((int) $id);
         $removed = $id->delete();
 
-        return redirect('home');
+        $permission = $this->validatePermission(Auth::user()->type, 'adminProfDelete', 'Modify');
+        if ($permission) {
+            return redirect('home');
+        } else {
+            $message = 'Você não possui permissão para excluir os usuários';
+            return view('home', compact('message'));
+        }
+    }
+
+    public function validatePermission($type_user, $route, $type_permission = 'Modify')
+    {
+        if (isset($type_user) && $type_user == 'AD') {
+            return true;
+        } else {
+            $permission = $this->objPermission->where('type_user', '=', $type_user)->where('route', '=', $route)->first();
+            if (!empty($permission->type_permission)) {
+                $type_route = '';
+                if ($type_permission == 'Modify') {
+                    $type_route = 'M';
+                } else if ($type_permission == 'Visualizaton') {
+                    $type_route = 'V';
+                }
+                if ($permission->type_permission == $type_route || $permission->type_permission == 'M') {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
     }
 }

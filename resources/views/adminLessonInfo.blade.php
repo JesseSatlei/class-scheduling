@@ -10,7 +10,10 @@
                 <div class="card-body">
 
                     <button type="button" class="btn btn-primary"> <a href="{{ route('adminClass') }}" style="color: #fff;"> Aulas </a></button>
-                    
+                    @if (isset($type) && $type == 'A')
+                        <button type="button" class="btn btn-primary"> <a href="{{ route('classEnter', $id) }}" style="color: #fff;"> Entrar na aula </a></button>
+                    @endif
+
                    <div class="form-group">
                         <label for="matter">Professor</label>
                         <input type="text" class="form-control" name="matter" id="matter" value="{{$teacher->name}}" required disabled>
@@ -19,12 +22,12 @@
                         <label for="type" >Alunos</label>
                         <div>
                             <select class="form-control" name="student[]" multiple disabled>
-                                @if ($students)
+                                @if (!empty($students))
                                     @foreach ($students as $student)
                                         <option value="{{$student->id}}">{{$student->name}}</option>
                                     @endforeach
                                 @else
-                                    <option value="">Não possui alunos nessa aula</option>
+                                    <option value="0">Não possui alunos nessa aula</option>
                                 @endif
                             </select>
                         </div>
@@ -36,7 +39,7 @@
                     <div class="form-group">
                         <label for="hourclass">Data e Hora</label>
                         <input type="datetime" class="form-control" name="hourclass"  value="{{$lessons->date}}" id="hourclass" required disabled>
-                    </div>       
+                    </div>
                 </div>
             </div>
         </div>

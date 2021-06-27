@@ -9,7 +9,7 @@
 
                 <div class="card-body">
 
-                    <button type="button" class="btn btn-primary"> <a href="{{ route('class') }}" style="color: #fff;"> Aulas </a></button>
+                    <button type="button" class="btn btn-primary"> <a href="{{ route('adminClass') }}" style="color: #fff;"> Voltar </a></button>
                     <div>
                         {{$status}}
                     </div>
@@ -17,7 +17,7 @@
                         @csrf
                         <button type="button" class="btn btn-primary"> <a href="{{ route('classCancelation', $id_lesson) }}" style="color: #fff;"> Cancelar Participação </a></button>
                     </form>
-                    
+
                 </div>
             </div>
         </div>

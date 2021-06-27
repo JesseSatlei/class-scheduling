@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Lesson;
-
+use App\Models\Permission;
 
 class ClassController extends Controller
 {
     private $objClass;
     private $objUsers;
+    private $objPermission;
+
     /**
      * Create a new controller instance.
      *
@@ -21,6 +23,7 @@ class ClassController extends Controller
     {
         $this->objClass = new Lesson;
         $this->objUsers = new User;
+        $this->objPermission = new Permission;
     }
 
     /**
@@ -66,26 +69,34 @@ class ClassController extends Controller
 
     public function studentRequest()
     {
-        $classes_teacher = $this->objClass->where('teacher_id', '=', Auth::user()->id)->get();
+        $classes_teacher = $this->objClass->get();
         $classes = array();
         $students = array();
         foreach ($classes_teacher as $key => $lesson) {
             if ($lesson->students) {
                 $classes = json_decode($lesson->students);
                 foreach ($classes as $key_class => $value) {
-                    $student = $this->objUsers->where('id', '=', $value->student_id)->get();
-                    if (isset($classes[$key]->present)) {
+                    $student = $this->objUsers->where('id', '=', $value->student_id)->first();
+                    if (isset($classes[$key_class]->present) && isset($classes[$key_class]->student_id)) {
                         $students[] = array(
-                            'present' => $classes[$key]->present,
-                            'student_id' => $classes[$key]->student_id,
-                            'name' => $student[0]->name,
-                            'lesson_id' => $lesson->id
+                            'present' => $classes[$key_class]->present,
+                            'student_id' => $classes[$key_class]->student_id,
+                            'name' => $student->name,
+                            'lesson_id' => $lesson->id,
+                            'matter' => $lesson->matter
                         );
                     }
                 }
             }
         }
-        return view('classStudentRequest', compact('students'));
+        $permission = $this->validatePermission(Auth::user()->type, 'classStudent', 'Modify');
+        if ($permission) {
+            return view('classStudentRequest', compact('students'));
+        } else {
+            $message = 'Você não possui permissão para acessar as solicitações para aulas';
+            return view('home', compact('message'));
+        }
+
     }
 
     public function confirmStudent(Request $request)
@@ -101,14 +112,14 @@ class ClassController extends Controller
                     $atualizaton_lesson = $this->objClass->where(['id'=>$request->lesson_id])->update([
                         'students' => $students
                     ]);
-                    return redirect ('class');
+                    return redirect ('classStudent');
                 } else if ($value->present == false && $value->student_id == $request->student_id) {
                     $students[$key]->present = true;
                     $students = json_encode($students);
                     $atualizaton_lesson = $this->objClass->where(['id'=>$request->lesson_id])->update([
                         'students' => $students
                     ]);
-                    return redirect ('class');
+                    return redirect ('classStudent');
                 }
             }
         }
@@ -184,24 +195,25 @@ class ClassController extends Controller
                     'students' => $students
                 ]);
                 if ($atualizaton_lesson) {
-                    return redirect('class');
+                    $status = 'Aguardando Aprovação';
+                    $id_lesson = $id;
+                    return view('classVerification', compact('status', 'id_lesson'));
                 }
             }
         } else {
             $students[] = array(
                     'present' => false,
-                    'student_id' => Auth::user()->id
+                    'student_id' => Auth::user()->id,
+                    'name_student' => '',
             );
             $students = json_encode($students);
 
             $atualizaton_lesson = $this->objClass->where(['id'=>$id])->update([
                 'students' => $students
             ]);
-            
             if ($atualizaton_lesson) {
-                return redirect ('class');
+                return redirect ('classVerification');
             }
-            
         }
     }
 
@@ -217,10 +229,32 @@ class ClassController extends Controller
                     $atualizaton_lesson = $this->objClass->where(['id'=>$id])->update([
                         'students' => $lessons
                     ]);
-                    return redirect ('class');
+                    return redirect ('adminClass');
                 }
             }
         }
-        return redirect ('class');
+        return redirect ('adminClass');
+    }
+
+    public function validatePermission($type_user, $route, $type_permission = 'Modify')
+    {
+        if (isset($type_user) && $type_user == 'AD') {
+            return true;
+        } else {
+            $permission = $this->objPermission->where('type_user', '=', $type_user)->where('route', '=', $route)->first();
+            if (!empty($permission->type_permission)) {
+                $type_route = '';
+                if ($type_permission == 'Modify') {
+                    $type_route = 'M';
+                } else if ($type_permission == 'Visualizaton') {
+                    $type_route = 'V';
+                }
+                if ($permission->type_permission == $type_route || $permission->type_permission == 'M') {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
     }
 }

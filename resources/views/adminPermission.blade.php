@@ -8,6 +8,7 @@
                 <div class="card-header">{{ __('Permissões') }}</div>
                 <div class="card-body">
                     <button type="button" class="btn btn-primary"><a href="{{ route('home') }}" style="color: #fff;"> Voltar </a></button>
+                    <button type="button" class="btn btn-primary"><a href="{{ route('registerPermission') }}" style="color: #fff;"> Nova Permissão </a></button>
                 </div>
             </div>
             <div>
@@ -15,24 +16,22 @@
                     <thead>
                         <tr>
                             <th scope="col">Nome</th>
+                            <th scopt="col">Tipo de Usuario</th>
                             <th scope="col">Editar</th>
-                            <th scope="col">Visualizar</th>
                             <th scope="col">Deletar</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if (isset($studants))
-                            @foreach($studants as $studant) 
+                        @if (isset($permissions))
+                            @foreach($permissions as $permission)
                             <tr>
-                                <td>{{$studant->name}}</td>
+                                <td>{{$permission->route}}</td>
+                                <td>{{$permission->type_user == 'P' ? 'Professor' : 'Aluno'}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary"><a href="{{ route('adminUserUpdate', $studant->id) }}" style="color: #fff;"> Editar </a></button>
+                                    <button type="button" class="btn btn-primary"><a href="{{ route('updatePermission', $permission->id) }}" style="color: #fff;"> Editar </a></button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-primary"><a href="{{ route('adminUserInfo', $studant->id) }}" style="color: #fff;"> Visualizar </a></button>
-                                </td>
-                                <td>
-                                    <form action="{{ route('adminProfDelete', $studant->id) }}" method="post">
+                                    <form action="{{ route('destroyPermission', $permission->id) }}" method="post">
                                         @method('DELETE')
                                         @csrf
                                         <button type="submit" class="btn btn-primary"> Deletar </button>
@@ -44,7 +43,6 @@
                         @endif
                     </tbody>
                 </table>
-                <p>As permissões não foram finalizadas :(</p>
             </div>
         </div>
     </div>

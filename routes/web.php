@@ -2,20 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
 Auth::routes();
 
@@ -32,6 +18,11 @@ Route::post('/classStore', [App\Http\Controllers\ClassController::class, 'store'
 Route::post('/classStudentConfirm', [App\Http\Controllers\ClassController::class, 'confirmStudent'])->name('classStudentConfirm');
 
 Route::get('/adminPermission', [App\Http\Controllers\AdminController::class, 'adminPermission'])->name('adminPermission');
+Route::get('/registerPermission', [App\Http\Controllers\AdminController::class, 'registerPermission'])->name('registerPermission');
+Route::get('/updatePermission/{id}', [App\Http\Controllers\AdminController::class, 'updatePermission'])->name('updatePermission');
+Route::post('/createPermission', [App\Http\Controllers\AdminController::class, 'createPermission'])->name('createPermission');
+Route::put('/permissionUpdate', [App\Http\Controllers\AdminController::class, 'permissionUpdate'])->name('permissionUpdate');
+Route::delete('/destroyPermission/{id}', [App\Http\Controllers\AdminController::class, 'destroyPermission'])->name('destroyPermission');
 
 Route::get('/adminClass', [App\Http\Controllers\AdminController::class, 'adminClass'])->name('adminClass');
 Route::get('/registerLesson', [App\Http\Controllers\AdminController::class, 'registerLesson'])->name('registerLesson');

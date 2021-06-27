@@ -10,7 +10,7 @@
                 <div class="card-body">
 
                     <button type="button" class="btn btn-primary"> <a href="{{ route('adminClass') }}" style="color: #fff;"> Aulas </a></button>
-                    
+
                     <form action="{{route('lessonUpdate')}}" method="post">
                         @method('PUT')
                         @csrf
@@ -23,7 +23,7 @@
                                         @foreach ($profs as $prof)
                                             @if ($teacher_lesson == $prof->id)
                                                 <option value="{{$prof->id}}" selected>{{$prof->name}}</option>
-                                            @else 
+                                            @else
                                                 <option value="{{$prof->id}}">{{$prof->name}}</option>
                                             @endif
                                         @endforeach
@@ -50,11 +50,10 @@
                         </div>
                         <div class="form-group">
                             <label for="hourclass">Data e Hora</label>
-                            <input type="datetime" class="form-control" name="hourclass" value="{{$lessons->date}}"  id="hourclass" required>
+                            <input type="datetime" class="form-control" name="hourclass" value="{{date_format(date_create($lessons->date), 'Y-m-d H:i')}}"  id="hourclass" required>
                         </div>
                         <input type="submit" value="Alterar" class="btn btn-success">
                     </form>
-                    
                 </div>
             </div>
         </div>

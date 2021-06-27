@@ -36,14 +36,18 @@ class AdminController extends Controller
 
     public function adminPermission()
     {
-        $permission = $this->validatePermission(Auth::user()->type, 'adminPermission', 'Visualization');
-        $permissions = $this->objPermission->get();
+        if (Auth::check()) {
+            $permission = $this->validatePermission(Auth::user()->type, 'adminPermission', 'Visualization');
 
-        if ($permission) {
-            return view('adminPermission', compact('permissions'));
+            if ($permission) {
+                $permissions = $this->objPermission->get();
+                return view('adminPermission', compact('permissions'));
+            } else {
+                $message = 'Você não possui permissão para acessar as permissões';
+                return view('home', compact('message'));
+            }
         } else {
-            $message = 'Você não possui permissão para acessar as permissões';
-            return view('home', compact('message'));
+            return redirect('register');
         }
     }
 

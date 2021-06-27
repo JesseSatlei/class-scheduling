@@ -14,10 +14,10 @@
     laravelsail/php80-composer:latest \
     composer install --ignore-platform-reqs
 
-./vendor/bin/sail up
-./vendor/bin/sail artisan migrate
+- ./vendor/bin/sail up -d
+- ./vendor/bin/sail artisan migrate
+- ./vendor/bin/sail artisan migrate:fresh --seed
+- https://cogitare.press/tecnologia/um-guia-completo-para-o-laravel-sail
 
 ## Observações
-- Para conseguir rodar o projeto não se esqueça de criar seu proprio .env e adicionar seus dados do banco de dados.
-- O Sistema de Permissão não foi finalizado.
-- Recomendo que seja criado primeiro um usuário administrador e em seguida criado os alunos e professores para depois criar alguma aula.
+- Crie o .env antes de utilizar o composer install e sail up

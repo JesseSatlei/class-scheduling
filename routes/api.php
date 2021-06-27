@@ -14,3 +14,9 @@ Route::post('users', [App\Http\Controllers\Api\UserController::class, 'store']);
 Route::get('users/{id}', [App\Http\Controllers\Api\UserController::class, 'show']);
 Route::put('users/{id}', [App\Http\Controllers\Api\UserController::class, 'update']);
 Route::delete('users/{id}', [App\Http\Controllers\Api\UserController::class, 'destroy']);
+
+Route::get('permissions', [App\Http\Controllers\Api\PermissionController::class, 'index']);
+Route::post('permissions', [App\Http\Controllers\Api\PermissionController::class, 'store']);
+Route::get('permissions/{id}', [App\Http\Controllers\Api\PermissionController::class, 'show']);
+Route::put('permissions/{id}', [App\Http\Controllers\Api\PermissionController::class, 'update']);
+Route::delete('permissions/{id}', [App\Http\Controllers\Api\PermissionController::class, 'destroy']);

@@ -1,53 +1,53 @@
 ## Detalhes do Projeto
 O objetivo deste teste é conhecer suas habilidades em:
-• PHP, Laravel, MySQL, HTML, CSS e JavaScript;
-• Entendimento e análise dos requisitos;
-• Modelagem de banco de dados;
-• APIs REST;
+- PHP, Laravel, MySQL, HTML, CSS e JavaScript;
+- Entendimento e análise dos requisitos;
+- Modelagem de banco de dados;
+- APIs REST;
 
 ## Tarefas
 Criação do Banco de Dados (Usuários, Alunos, Professores, Aulas).
-• Criação do sistema de permissão dos usuários para cada ação do
+- Criação do sistema de permissão dos usuários para cada ação do
 sistema.
-• Criação de CRUD para Usuários, Alunos, Professores, Aulas.
-• Criar sistema de Login para Usuários administradores, Alunos e
+- Criação de CRUD para Usuários, Alunos, Professores, Aulas.
+- Criar sistema de Login para Usuários administradores, Alunos e
 Professores.
-• O Aluno pode solicitar participação em uma aula, essa participação
+- O Aluno pode solicitar participação em uma aula, essa participação
 deverá ser exibida como notificação para o professor responsável, e o
 mesmo deve aceitar ou recusar esse aluno na aula.
-• Criação dos recursos de API Rest que possibilitem utilizar o sistema
+- Criação dos recursos de API Rest que possibilitem utilizar o sistema
 através de um aplicativo externo.
-• Utilizar Docker ou Sail (Laravel 8).
-• Hospedar o projeto em serviço de sua preferência (AWS, DigitalOcean,
+- Utilizar Docker ou Sail (Laravel 8).
+- Hospedar o projeto em serviço de sua preferência (AWS, DigitalOcean,
 Heroku, etc).
-• Utilizar Git para gerenciar o projeto.
-• Deve ser utilizado o Composer para gerenciar as dependências da
+- Utilizar Git para gerenciar o projeto.
+- Deve ser utilizado o Composer para gerenciar as dependências da
 aplicação.
-• Crie um README com orientações para a instalação
+- Crie um README com orientações para a instalação
 
 ## Observações
 
 No sistema de permissão, o usuário administrador deve conseguir editar
 a permissão para cada ação do sistema, para determinados níveis de
 usuário(Professor, Aluno).
-• O sistema de login, deve possibilitar o login e cadastro para todos os
+- O sistema de login, deve possibilitar o login e cadastro para todos os
 níveis de usuário (Administrador, Aluno, Professor).
-• Para o CRUD deve ser possível Criar, Listar, Editar e Visualizar esses
+- Para o CRUD deve ser possível Criar, Listar, Editar e Visualizar esses
 recursos através de um painel, de acordo com as respectivas permissões.
-• O Painel de gerenciamento pode ser criado utilizando a tecnologia que
+- O Painel de gerenciamento pode ser criado utilizando a tecnologia que
 desejar para o Front-End.
-• O Aluno pode: Visualizar as aulas e suas informações(Professor, matéria,
+- O Aluno pode: Visualizar as aulas e suas informações(Professor, matéria,
 data, hora), se inscrever em uma aula, cancelar a participação em uma
 aula.
-• O Professor pode: Visualizar as aulas (Alunos, matéria, data, hora),
+- O Professor pode: Visualizar as aulas (Alunos, matéria, data, hora),
 aceitar/rejeitar solicitação de novos alunos.
-• O Administrador pode: Criar, editar, visualizar, excluir todos os recursos
+- O Administrador pode: Criar, editar, visualizar, excluir todos os recursos
 (aulas, alunos, professores), alterar permissões.
-• Caso o Aluno seja aceito em uma aula, deverá enviar uma notificação no
+- Caso o Aluno seja aceito em uma aula, deverá enviar uma notificação no
 painel do mesmo para informar.
-• Caso o Aluno seja recusado em uma aula, enviar notificação para o
+- Caso o Aluno seja recusado em uma aula, enviar notificação para o
 mesmo informando o motivo da recusa.
-• Para os recursos de API Rest, deverá ser desenvolvida seguindo o modelo
+- Para os recursos de API Rest, deverá ser desenvolvida seguindo o modelo
 de autenticação padrão utilizando Passport. 
 
 ## Ferramentas para Rodar o projeto
